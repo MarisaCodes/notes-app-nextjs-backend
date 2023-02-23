@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
-const noteModel = require("./models/noteModel");
+const noteRoutes = require("./routes/noteRoutes");
 
 require("dotenv").config();
 
@@ -24,28 +24,12 @@ mongoose
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.get("/", (req, res) => {
-  try {
-    noteModel
-      .find((err, docs) => {
-        if (err) {
-          throw Error(err.message);
-        } else {
-          res.status(200).json(docs);
-        }
-      })
-      .sort({ updatedAt: -1 });
-  } catch (err) {
-    res.status(400).json(err.message);
-  }
-});
-app.post("/", (req, res) => {
-  noteModel
-    .create(req.body)
-    .then((note) => {
-      res.status(200).json(note);
-    })
-    .catch((err) => {
-      res.status(400).json(err.message);
-    });
+
+// routes
+app.use("/notes", noteRoutes);
+
+// test conn
+
+app.get("/test", (req, res) => {
+  res.status(200).json({ ok: true });
 });
